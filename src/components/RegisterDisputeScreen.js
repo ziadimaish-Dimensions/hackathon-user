@@ -2,23 +2,23 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, ScrollView } from "react-native";
 import axios from "axios";
 import { Buffer } from "buffer";
-import { styles } from "../styles/style";
+import { styles } from "../styles/style"; // Ensure the file name is all lowercase
 
 const RegisterDisputeScreen = () => {
-  const [reference, setReference] = useState("511");
-  const [bic, setBic] = useState("FRALJO22");
+  const [reference, setReference] = useState("RFAM201811280001");
+  const [bic, setBic] = useState("AAAAYYZZ");
   const [disputeCategory, setDisputeCategory] = useState("TECH");
   const [subject, setSubject] = useState("ACNC");
   const [message, setMessage] = useState(
     "There was typo in creditor account, please replace it with account 12345678998076"
   );
   const [currency, setCurrency] = useState("JOD");
-  const [value, setValue] = useState("74");
-  const [messageId, setMessageId] = useState("FRALJO22AXXX92952825");
-  const [transactionId, setTransactionId] = useState("FRALJO22AXXX92952825");
-  const [valueDate, setValueDate] = useState("2024-7-17");
+  const [value, setValue] = useState("500");
+  const [messageId, setMessageId] = useState("KTBF2018112217530001");
+  const [transactionId, setTransactionId] = useState("KTBF2018112217530001");
+  const [valueDate, setValueDate] = useState("2018-11-28");
   const [orderingInstitutionBic, setOrderingInstitutionBic] =
-    useState("FRALJO22");
+    useState("AAAAYYZZ");
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
   const [disputeId, setDisputeId] = useState(null);
@@ -95,6 +95,29 @@ const RegisterDisputeScreen = () => {
     } catch (err) {
       console.log("Assign Error:", err.message);
       console.error("Assign Error details:", err);
+      setError(err.response?.data || err.message);
+      setResponse(null);
+    }
+  };
+
+  const handleGetDisputes = async () => {
+    console.log("Getting disputes...");
+    const url = "http://141.147.32.152:11443/api/dmm/v1.0/disputes";
+    const auth = Buffer.from("FRALJO22AXXX:12345678").toString("base64");
+
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          Authorization: `Basic ${auth}`,
+        },
+      });
+      console.log("Get Disputes Response:", response.data);
+      setResponse(response.data);
+      setError(null);
+    } catch (err) {
+      console.log("Get Disputes Error:", err.message);
+      console.error("Get Disputes Error details:", err);
       setError(err.response?.data || err.message);
       setResponse(null);
     }
@@ -181,6 +204,13 @@ const RegisterDisputeScreen = () => {
         onPress={() => {
           console.log("Assign button pressed");
           handleAssignDispute();
+        }}
+      />
+      <Button
+        title="Get Disputes"
+        onPress={() => {
+          console.log("Get Disputes button pressed");
+          handleGetDisputes();
         }}
       />
       {response && (
