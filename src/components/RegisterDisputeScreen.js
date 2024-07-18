@@ -1,30 +1,27 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, Text, TextInput, Button, ScrollView } from "react-native";
 import axios from "axios";
 import { Buffer } from "buffer";
+import { styles } from "../styles/style";
 
 const RegisterDisputeScreen = () => {
-  const [reference, setReference] = useState("14");
-  const [bic, setBic] = useState("FRALJO30");
+  const [reference, setReference] = useState("511");
+  const [bic, setBic] = useState("FRALJO22");
   const [disputeCategory, setDisputeCategory] = useState("TECH");
   const [subject, setSubject] = useState("ACNC");
-  const [message, setMessage] = useState("12345678998076");
+  const [message, setMessage] = useState(
+    "There was typo in creditor account, please replace it with account 12345678998076"
+  );
   const [currency, setCurrency] = useState("JOD");
-  const [value, setValue] = useState("22");
-  const [messageId, setMessageId] = useState("FRALJO22AXXX92951204");
-  const [transactionId, setTransactionId] = useState("FRALJO22AXXX92951204");
-  const [valueDate, setValueDate] = useState("2024-07-17");
+  const [value, setValue] = useState("74");
+  const [messageId, setMessageId] = useState("FRALJO22AXXX92952825");
+  const [transactionId, setTransactionId] = useState("FRALJO22AXXX92952825");
+  const [valueDate, setValueDate] = useState("2024-7-17");
   const [orderingInstitutionBic, setOrderingInstitutionBic] =
     useState("FRALJO22");
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
+  const [disputeId, setDisputeId] = useState(null);
 
   const handleRegisterDispute = async () => {
     console.log("Registering dispute...");
@@ -61,12 +58,44 @@ const RegisterDisputeScreen = () => {
       });
       console.log("Response:", response.data);
       setResponse(response.data);
+      setDisputeId(response.data._links.self.href.split("/").pop());
       setError(null);
     } catch (err) {
       console.log("Error:", err.message);
       console.error("Error details:", err);
-      console.lo("Error details:", err.response.data);
-      setError(err.message);
+      setError(err.response?.data || err.message);
+      setResponse(null);
+    }
+  };
+
+  const handleAssignDispute = async () => {
+    if (!disputeId) {
+      setError("Dispute ID not found. Register the dispute first.");
+      return;
+    }
+
+    console.log("Assigning dispute...");
+    const url = `http://141.147.32.152:11443/api/dmm/v1.0/disputes/${disputeId}/assign`;
+    const auth = Buffer.from("FRALJO22AXXX:12345678").toString("base64");
+
+    const data = {
+      message: "Please provide verifying document",
+    };
+
+    try {
+      const response = await axios.post(url, data, {
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          Authorization: `Basic ${auth}`,
+        },
+      });
+      console.log("Assign Response:", response.data);
+      setResponse(response.data);
+      setError(null);
+    } catch (err) {
+      console.log("Assign Error:", err.message);
+      console.error("Assign Error details:", err);
+      setError(err.response?.data || err.message);
       setResponse(null);
     }
   };
@@ -147,6 +176,13 @@ const RegisterDisputeScreen = () => {
           handleRegisterDispute();
         }}
       />
+      <Button
+        title="Assign Dispute"
+        onPress={() => {
+          console.log("Assign button pressed");
+          handleAssignDispute();
+        }}
+      />
       {response && (
         <View style={styles.response}>
           <Text style={styles.responseTitle}>Response:</Text>
@@ -156,55 +192,11 @@ const RegisterDisputeScreen = () => {
       {error && (
         <View style={styles.error}>
           <Text style={styles.errorTitle}>Error:</Text>
-          <Text>{error}</Text>
+          <Text>{JSON.stringify(error, null, 2)}</Text>
         </View>
       )}
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-  },
-  input: {
-    width: "100%",
-    padding: 10,
-    marginVertical: 5,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-  },
-  response: {
-    marginTop: 20,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-  },
-  responseTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  error: {
-    marginTop: 20,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "red",
-    borderRadius: 5,
-  },
-  errorTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "red",
-  },
-});
 
 export default RegisterDisputeScreen;
