@@ -11,17 +11,18 @@ import axios from "axios";
 import { Buffer } from "buffer";
 
 const RegisterDisputeScreen = () => {
-  const [reference, setReference] = useState("");
-  const [bic, setBic] = useState("");
-  const [disputeCategory, setDisputeCategory] = useState("");
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
-  const [currency, setCurrency] = useState("");
-  const [value, setValue] = useState("");
-  const [messageId, setMessageId] = useState("");
-  const [transactionId, setTransactionId] = useState("");
-  const [valueDate, setValueDate] = useState("");
-  const [orderingInstitutionBic, setOrderingInstitutionBic] = useState("");
+  const [reference, setReference] = useState("12");
+  const [bic, setBic] = useState("FRALJO28");
+  const [disputeCategory, setDisputeCategory] = useState("TECH");
+  const [subject, setSubject] = useState("ACNC");
+  const [message, setMessage] = useState("12345678998076");
+  const [currency, setCurrency] = useState("JOD");
+  const [value, setValue] = useState("22");
+  const [messageId, setMessageId] = useState("FRALJO22AXXX92950882");
+  const [transactionId, setTransactionId] = useState("FRALJO22AXXX92950882");
+  const [valueDate, setValueDate] = useState("2024-07-17");
+  const [orderingInstitutionBic, setOrderingInstitutionBic] =
+    useState("FRALJO22");
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
 
@@ -54,7 +55,7 @@ const RegisterDisputeScreen = () => {
       const response = await axios.post(url, data, {
         headers: {
           "Content-Type": "application/json; charset=UTF-8",
-          Authorization: `Basic ${auth}`,
+          Authorization: `${auth}`,
         },
       });
       console.log("Response:", response.data);
@@ -63,6 +64,7 @@ const RegisterDisputeScreen = () => {
     } catch (err) {
       console.log("Error:", err.message);
       console.error("Error details:", err);
+      console.lo("Error details:", err.response.data);
       setError(err.message);
       setResponse(null);
     }
