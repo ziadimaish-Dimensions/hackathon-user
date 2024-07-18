@@ -11,15 +11,15 @@ import axios from "axios";
 import { Buffer } from "buffer";
 
 const RegisterDisputeScreen = () => {
-  const [reference, setReference] = useState("12");
-  const [bic, setBic] = useState("FRALJO28");
+  const [reference, setReference] = useState("14");
+  const [bic, setBic] = useState("FRALJO30");
   const [disputeCategory, setDisputeCategory] = useState("TECH");
   const [subject, setSubject] = useState("ACNC");
   const [message, setMessage] = useState("12345678998076");
   const [currency, setCurrency] = useState("JOD");
   const [value, setValue] = useState("22");
-  const [messageId, setMessageId] = useState("FRALJO22AXXX92950882");
-  const [transactionId, setTransactionId] = useState("FRALJO22AXXX92950882");
+  const [messageId, setMessageId] = useState("FRALJO22AXXX92951204");
+  const [transactionId, setTransactionId] = useState("FRALJO22AXXX92951204");
   const [valueDate, setValueDate] = useState("2024-07-17");
   const [orderingInstitutionBic, setOrderingInstitutionBic] =
     useState("FRALJO22");
@@ -28,8 +28,9 @@ const RegisterDisputeScreen = () => {
 
   const handleRegisterDispute = async () => {
     console.log("Registering dispute...");
-    const url = "https://141.147.32.152:11443/api/dmm/v1.0/disputes";
+    const url = "http://141.147.32.152:11443/api/dmm/v1.0/disputes";
     const auth = Buffer.from("FRALJO22AXXX:12345678").toString("base64");
+    console.log("Auth:", auth);
 
     const data = {
       reference,
@@ -55,7 +56,7 @@ const RegisterDisputeScreen = () => {
       const response = await axios.post(url, data, {
         headers: {
           "Content-Type": "application/json; charset=UTF-8",
-          Authorization: `${auth}`,
+          Authorization: `Basic ${auth}`,
         },
       });
       console.log("Response:", response.data);
